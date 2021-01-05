@@ -3,8 +3,6 @@ from flask import render_template, url_for
 from kryptoexchange.forms import MovementForm
 import sqlite3
 
-DBfile = 'kryptoexchange/data/exchanges.db'
-
 def consulta (query, params=()):
     conn = sqlite3.connect(DBfile)
     c = conn.cursor()
