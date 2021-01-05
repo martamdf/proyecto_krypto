@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Crypto - {%block title%}{%endblock%}</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="svg-container">
+        <svg viewbox="0 0 800 200">
+            <path id="curve" fill="#2a85da" d="M 800 10 Q 200 0 0 150 L 0 0 L 800 1 L 800 0 Z">
+            </path>
+        </svg>
+    </div>
+    <header>
+        <h1>My Crypto</h1>
+        <br>
+        <h3>Simulador de Compra/Venta de Criptomonedas</h3>
+    </header>
+    <main>
+        <section>
+            {%block content%}{% endblock%}
+        </section>
+    </main>
+    <footer>
+        &copy; 2021. Todos los derechos reservados.
+    </footer>
+</body>
+</html>

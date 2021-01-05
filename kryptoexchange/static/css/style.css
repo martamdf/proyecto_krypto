@@ -1,0 +1,91 @@
+@import 'https://fonts.googleapis.com/css?family=Ubuntu:300, 400, 500, 700';
+
+*, *:after, *:before {
+    margin: 0;
+    padding: 0;
+}
+
+.svg-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: -1;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #2a85da;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+li a:hover:not(.active) {
+    background-color: #111;
+}
+
+.active {
+    background-color: #0f4577;
+}
+
+  /* Change the link color to #111 (black) on hover */
+/* li a:hover {
+    background: #333;
+} */
+
+body {
+    background: #fff;
+    color: #333;
+    font-family: 'Ubuntu', sans-serif;
+    position: relative;
+}
+
+h3 {
+    font-weight: 400;
+}
+
+header {
+    height: 100px;
+    color:#2a85da;
+    padding-top: 9vw; 
+    padding-bottom: 1vw;
+    padding-right: 1vw;
+    text-align: right;
+}
+
+main {
+    background: linear-gradient(to bottom, #ffffff 0%, #dddee1 100%);
+    border-bottom: 1px solid rgba(0, 0, 0, .2);
+    padding: 0vh 0 30vh;
+    position: relative;
+    text-align: center;
+    overflow: auto; 
+}
+
+footer {
+    background: #dddee1;
+    padding: 5vh 0;
+    text-align: center;
+    position: relative;
+}
+
+table {
+    border: 1px solid #0f4577;
+    text-align: center;
+}
+
+th {
+    border: 1px solid #0f4577;
+}

@@ -1,0 +1,62 @@
+{%extends 'base.html'%}
+
+{%block title%} Lista de Movimientos {%endblock%}
+
+{%block content%}
+    <ul>
+        <li><a href="#nogo" class="active">Inicio</a></li>
+        <li><a href="./compra">Compra</a></li>
+        <li><a href="./balance">Estado</a></li>
+    </ul>
+    <br>
+    <h2>Mis Movimientos </h2>
+
+    <br>
+    {% if transacciones|length > 0 %}
+        <table>
+            <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>From</th>
+                <th>Q</th>
+                <th>To</th>
+                <th>Q</th>
+                <th>P.U.</th>
+            </tr>
+            </thead>
+            {% for transaccion in transacciones %}
+            <tr>
+                <td>{{transaccion['date']}}</td>
+                <td>{{transaccion['time']}}</td>
+                <td>{{transaccion['from_currency']}}</td>
+                <td>{{transaccion['date']}}</td>
+                <td>{{transaccion['date']}}</td>
+                <td>{{transaccion['date']}}</td>
+                <td>{{transaccion['date']}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+    <div style="text-align: center;">
+        <table style="margin: 0 auto;">
+            <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>From</th>
+                <th>Q</th>
+                <th>To</th>
+                <th>Q</th>
+                <th>P.U.</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+    <br>
+        <p>¡Oh no! Sin Movimientos 😢 ¡Haz tu primera compra!.</p>
+    {% endif %}
+    <br> 
+    <br>
+
+{%endblock%}
