@@ -28,14 +28,14 @@
             {% for transaccion in transacciones %}
             <tr>
                 <td>{{transaccion['date']}}</td>
-                <td>{{transaccion['time']}}</td>
+                <td>{{transaccion['time'][0:8]}}</td>
                 <td>{{transaccion['from_currency']}}</td>
                 <td>{{transaccion['from_quantity']}}</td>
                 <td>{{transaccion['to_currency']}}</td>
                 <td>{{transaccion['to_quantity']}}</td>
                 <td>{{transaccion['date']}}</td>
             </tr>
-            
+
             {% endfor %}
         </table>
     {% else %}
@@ -55,7 +55,7 @@
         </table>
     </div>
     <br>
-        <p>¡Oh no! Sin Movimientos 😢 ¡Haz tu primera compra!.</p>
+        <p>¡Oh no! Sin Transacciones. 😢 ¡Haz tu primera compra!.</p>
     {% endif %}
     <br> 
     <br>
