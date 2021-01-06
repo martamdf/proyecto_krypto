@@ -4,8 +4,6 @@ from kryptoexchange.forms import MovementForm
 from datetime import datetime, date, time
 import sqlite3
 
-DBfile = 'kryptoexchange/data/exchanges.db'
-
 def consulta (query, params=()):
     conn = sqlite3.connect(DBfile)
     c = conn.cursor()
