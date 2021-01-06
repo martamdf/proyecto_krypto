@@ -1,6 +1,7 @@
 from kryptoexchange import app
-from flask import render_template, url_for
+from flask import render_template, request, url_for, redirect
 from kryptoexchange.forms import MovementForm
+from datetime import datetime, date, time
 import sqlite3
 
 DBfile = 'kryptoexchange/data/exchanges.db'
@@ -34,13 +35,30 @@ def consulta (query, params=()):
 
 @app.route('/')
 def listaMovimientos():
-    transacciones = consulta('SELECT id , date, time, from_currency FROM movements;') 
+    transacciones = consulta('SELECT id , date, time, from_currency, from_quantity, to_currency, to_quantity FROM movements;')
     return render_template('listamovimientos.html', transacciones=transacciones) 
-
 
 @app.route('/compra', methods=["GET", "POST"])
 def nuevaCompra():
-    return render_template("compra.html")
+    form = MovementForm()
+    if request.method == "POST":
+        now = datetime.now().time()
+        if form.validate():
+            consulta('INSERT INTO movements (date, time, from_currency, from_quantity, to_currency) VALUES (?, ?, ?, ?, ?);', 
+                    (
+                    date.today(),
+                    str(now),
+                    form.from_currency.data,
+                    form.q1.data,
+                    form.to_currency.data,
+                    )
+                ) 
+            return redirect(url_for('listaMovimientos')) #te devuelve a la página principal
+        else:
+            return render_template("compra.html", form=form)
+
+    return render_template("compra.html", form=form)
+
 
 
 @app.route('/balance')

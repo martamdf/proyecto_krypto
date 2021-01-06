@@ -9,4 +9,27 @@
     <li><a href="./balance">Estado</a></li>
 </ul>
 
+<h1>Nueva Compra</h1>
+Introduzca los datos del nuevo ingreso:
+<br/>
+<form action="compra", method="POST">
+    {{ form.hidden_tag() }}
+    <div class="field">
+        {{ form.from_currency.label }}
+        {{ form.from_currency (placeholder='Moneda origen')}}
+    </div>
+    <div class="field">
+        {{ form.q1.label }}
+        {{ form.q1 (placeholder='Cantidad')}}
+    </div>
+    <div class="field">
+        {{ form.to_currency.label }}
+        {{ form.to_currency (placeholder='Moneda que compras')}}
+    </div>
+    <div class="field">
+        {{ form.submit }}
+    </div>
+</form> 
+
+
 {%endblock%}
