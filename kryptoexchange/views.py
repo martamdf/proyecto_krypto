@@ -60,7 +60,6 @@ def nuevaCompra():
     return render_template("compra.html", form=form)
 
 
-
 @app.route('/balance')
 def balance():
     return render_template('balance.html')
