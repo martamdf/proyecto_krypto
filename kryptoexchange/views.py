@@ -36,7 +36,11 @@ def consulta (query, params=()):
 @app.route('/')
 def listaMovimientos():
     transacciones = consulta('SELECT id , date, time, from_currency, from_quantity, to_currency, to_quantity FROM movements;')
-    return render_template('listamovimientos.html', transacciones=transacciones) 
+    for transaccion in transacciones:
+        preciounitario = (transaccion['from_quantity'])+(transaccion['to_quantity']) 
+        print (preciounitario)
+    print (transacciones)
+    return render_template('listamovimientos.html', transacciones=transacciones, preciounitario=preciounitario) 
 
 @app.route('/compra', methods=["GET", "POST"])
 def nuevaCompra():

@@ -14,7 +14,6 @@ lista = c.fetchall()
 listilla= []
 for moneda in lista:
     listilla.append(moneda[0])
-
 conn.close()
 
 
@@ -27,5 +26,6 @@ class MovementForm(FlaskForm): #hereda de FlaskForm
                             [validators.Required()],
                             choices=listilla)
     submit = SubmitField('¡Compra ya!')
+    calculadora = SubmitField('Calcula precios')
 
 
