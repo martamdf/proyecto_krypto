@@ -4,6 +4,8 @@ from kryptoexchange.forms import MovementForm
 from datetime import datetime, date, time
 import sqlite3
 
+DBfile = app.config['DBFILE']
+
 def consulta (query, params=()):
     conn = sqlite3.connect(DBfile)
     c = conn.cursor()
@@ -61,5 +63,3 @@ def nuevaCompra():
 @app.route('/balance')
 def balance():
     return render_template('balance.html')
-
-
