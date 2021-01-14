@@ -10,8 +10,10 @@
 </ul>
 
 <h1>Nueva Compra</h1>
-Introduzca los datos del nuevo ingreso:
-<br/>
+<br>
+Seleccione los datos de la nueva compra:
+<br>
+<br>
 
 <form action="compra", method="POST">
     {{ form.hidden_tag() }}
@@ -20,17 +22,24 @@ Introduzca los datos del nuevo ingreso:
         {{ form.from_currency (placeholder='Moneda origen')}}
     </div>
     <div class="field">
+        {{ form.to_currency.label }}
+        {{ form.to_currency (placeholder='Moneda que compras')}}
+    </div>
+    <div class="field">
         {{ form.q1.label }}
         {{ form.q1 (placeholder='Cantidad')}}
     </div>
+    <div class="fa fa-calculator">
+        {{ form.calculadora }}
+    </div>
     <div class="field">
-        {{ form.to_currency.label }}
-        {{ form.to_currency (placeholder='Moneda que compras')}}
+        {{ form.cantidadconvertida (value=cantidadconvertida) }}
     </div>
     <div class="field">
         {{ form.submit }}
     </div>
 </form> 
+
 
 
 {%endblock%}

@@ -25,7 +25,8 @@ class MovementForm(FlaskForm): #hereda de FlaskForm
     to_currency = SelectField('To currency',
                             [validators.Required()],
                             choices=listilla)
-    submit = SubmitField('¡Compra ya!')
-    calculadora = SubmitField('Calcula precios')
+    calculadora = SubmitField(label='calcula', description='calcula')
+    cantidadconvertida = FloatField()
+    submit = SubmitField('¡Compra ya!', default=None)
 
 

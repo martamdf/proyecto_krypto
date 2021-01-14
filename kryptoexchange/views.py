@@ -37,7 +37,7 @@ def consulta (query, params=()):
 def listaMovimientos():
     transacciones = consulta('SELECT id , date, time, from_currency, from_quantity, to_currency, to_quantity FROM movements;')
     for transaccion in transacciones:
-        preciounitario = (transaccion['from_quantity'])+(transaccion['to_quantity']) 
+        preciounitario = (transaccion['from_quantity'])+(transaccion['from_quantity']) 
         print (preciounitario)
     print (transacciones)
     return render_template('listamovimientos.html', transacciones=transacciones, preciounitario=preciounitario) 
@@ -48,18 +48,23 @@ def nuevaCompra():
     if request.method == "POST":
         now = datetime.now().time()
         if form.validate():
-            consulta('INSERT INTO movements (date, time, from_currency, from_quantity, to_currency) VALUES (?, ?, ?, ?, ?);', 
-                    (
-                    date.today(),
-                    str(now),
-                    form.from_currency.data,
-                    form.q1.data,
-                    form.to_currency.data,
-                    )
-                ) 
-            return redirect(url_for('listaMovimientos')) #te devuelve a la página principal
+            if 'calculadora' in request.form:
+                print('¡Hola!')
+                cantidadconvertida = 79
+                return render_template("compra.html", cantidadconvertida=cantidadconvertida)
+            else:
+                consulta('INSERT INTO movements (date, time, from_currency, from_quantity, to_currency) VALUES (?, ?, ?, ?, ?);', 
+                        (
+                        date.today(),
+                        str(now),
+                        form.from_currency.data,
+                        form.q1.data,
+                        form.to_currency.data,
+                        )
+                    ) 
+                return redirect(url_for('listaMovimientos')) #te devuelve a la página principal   
         else:
-            return render_template("compra.html", form=form)
+                return render_template("compra.html", form=form)
 
     return render_template("compra.html", form=form)
 
