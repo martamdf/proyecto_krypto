@@ -1,6 +1,6 @@
 from kryptoexchange import app
 from flask_wtf import FlaskForm
-from wtforms import DateField, TimeField, StringField, SubmitField, FloatField, SelectField, validators
+from wtforms import DateField, TimeField, StringField, SubmitField, DecimalField, FloatField, SelectField, validators
 from wtforms.validators import DataRequired, Length
 import sqlite3
 
@@ -26,7 +26,7 @@ class MovementForm(FlaskForm): #hereda de FlaskForm
                             [validators.Required()],
                             choices=listilla)
     calculadora = SubmitField(label='calcula', description='calcula')
-    cantidadconvertida = FloatField()
+    cantidadconvertida = StringField(render_kw={'readonly': True})
     submit = SubmitField('¡Compra ya!', default=None)
 
 

@@ -19,11 +19,22 @@ Seleccione los datos de la nueva compra:
     {{ form.hidden_tag() }}
     <div class="field">
         {{ form.from_currency.label }}
-        {{ form.from_currency (placeholder='Moneda origen')}}
+        {{ form.from_currency }}
     </div>
     <div class="field">
         {{ form.to_currency.label }}
-        {{ form.to_currency (placeholder='Moneda que compras')}}
+        {{ form.to_currency }}
+    </div>
+    <div class="nonw" style="background-color:red">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class=flashes>
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
     </div>
     <div class="field">
         {{ form.q1.label }}
@@ -33,13 +44,15 @@ Seleccione los datos de la nueva compra:
         {{ form.calculadora }}
     </div>
     <div class="field">
-        {{ form.cantidadconvertida (value=cantidadconvertida) }}
+        {{ cantidadconvertida }}
+    </div>
+    <div class="field">
+        {{ preciounitario }}
     </div>
     <div class="field">
         {{ form.submit }}
     </div>
 </form> 
-
 
 
 {%endblock%}
