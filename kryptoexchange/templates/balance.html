@@ -9,4 +9,36 @@
     <li><a href="#nogo" class="active">Estado</a></li>
 </ul>
 
+<h2>Mi Balance</h2>
+
+    <br>
+    {% if inversion > 0 %}
+        <table style="margin: 0 auto;">
+            <thead>
+            <tr>
+                <th>Cantidad invertida (€)</th>
+                <th>Precio Actual (€)</th>
+            </tr>
+            </thead>
+            <tr>
+                <td>{{inversion}}</td>
+                <td>Hola</td>
+            </tr>
+        </table>
+        <div>Balance: </div>
+    {% else %}
+    <div style="text-align: center;">
+        <table style="margin: 0 auto;">
+            <thead>
+            <tr>
+                <th>Cantidad Invertida</th>
+                <th>Hora</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+    <br>
+        <p>¡Oh no! No has invertido ni un duro. 😢 ¡Haz tu primera compra!.</p>
+    {% endif %}
+
 {%endblock%}

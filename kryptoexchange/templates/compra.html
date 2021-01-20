@@ -43,8 +43,9 @@ Seleccione los datos de la nueva compra:
     <div class="fa fa-calculator">
         {{ form.calculadora }}
     </div>
-    <div class="field">
-        {{ cantidadconvertida }}
+    <div class="field">        
+        {{ form.q2.label }}
+        {{ form.q2 (size=20, placeholder='Cantidad Convertida', readonly="readonly", value=cantidadconvertida) }}
     </div>
     <div class="field">
         {{ preciounitario }}
