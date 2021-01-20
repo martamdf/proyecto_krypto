@@ -1,6 +1,6 @@
 {%extends 'base.html'%}
 
-{%block title%} BALANCE {%endblock%}
+{%block title%} Balance {%endblock%}
 
 {%block content%}
 <ul>
@@ -8,7 +8,7 @@
     <li><a href="./compra">Compra</a></li>
     <li><a href="#nogo" class="active">Estado</a></li>
 </ul>
-
+<br>
 <h2>Mi Balance</h2>
 
     <br>
@@ -22,10 +22,16 @@
             </thead>
             <tr>
                 <td>{{inversion}}</td>
-                <td>Hola</td>
+                <td>{{valoractual}}</td>
             </tr>
         </table>
-        <div>Balance: </div>
+        {%if balance > 0%}
+        <div>Wuaaaalaaa! No te ha salido mal la cosa... </div>
+        <div style="color:green">Balance: {{balance}}</div>
+        {%else%}
+        <div>Ainnnnss! La cosa está cuesta arriba </div>
+        <div style="color:red">Balance: {{balance}}</div>
+        {%endif%}
     {% else %}
     <div style="text-align: center;">
         <table style="margin: 0 auto;">

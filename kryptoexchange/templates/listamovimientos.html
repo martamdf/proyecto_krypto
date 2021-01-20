@@ -1,6 +1,6 @@
 {%extends 'base.html'%}
 
-{%block title%} Lista de Movimientos {%endblock%}
+{%block title%} Lista de Transacciones {%endblock%}
 
 {%block content%}
     <ul>
@@ -13,7 +13,7 @@
 
     <br>
     {% if transacciones|length > 0 %}
-        <table style="margin: 0 auto;">
+        <table class="center">
             <thead>
             <tr>
                 <th>Fecha</th>

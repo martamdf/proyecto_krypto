@@ -91,8 +91,18 @@ def nuevaCompra():
 
 @app.route('/balance')
 def balance():
-    euros_invertidos = consulta('SELECT from_quantity FROM movements WHERE from_currency ="EUR"')
+    euros_invertidos = consulta('SELECT from_quantity FROM movements WHERE from_currency = "EUR"')
     inversion=0
     for euros in euros_invertidos:
         inversion+=(euros['from_quantity'])
-    return render_template('balance.html', inversion=inversion)
+    divisasdistintas = consulta('SELECT to_quantity, to_currency FROM movements WHERE to_currency <> "EUR"')
+    valoractual=0
+    for divisa in divisasdistintas:
+        url = 'https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={}&symbol={}&convert={}&CMC_PRO_API_KEY={}'.format(divisa['to_quantity'], divisa['to_currency'], 'EUR', API_KEY)
+        respuesta = requests.get(url)
+        ey = respuesta.json()
+        precio = (ey['data']['quote']['EUR']['price'])
+        valoractual += precio
+    print(valoractual)
+    balance=valoractual-inversion
+    return render_template('balance.html', inversion=inversion, valoractual=valoractual, balance=balance)
