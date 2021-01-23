@@ -5,6 +5,7 @@ from datetime import datetime, date, time
 import sqlite3
 import requests
 from sigfig import round
+from decimal import Decimal
 
 DBfile = app.config['DBFILE']
 API_KEY = app.config['API_KEY']
@@ -39,48 +40,54 @@ def consulta (query, params=()):
 @app.route('/')
 def listaMovimientos():
     transacciones = consulta('SELECT id , date, time, from_currency, from_quantity, to_currency, to_quantity FROM movements;')
-    print(transacciones)
     for transaccion in transacciones:
-        print(transaccion)
-        preciounitario = (transaccion['from_quantity'])/(transaccion['to_quantity'])
-        transaccion['preciounitario'] = round((preciounitario),3)
-        print(transaccion)
-    return render_template('listamovimientos.html', transacciones=transacciones, preciounitario=preciounitario) 
+        precio_u = (transaccion['from_quantity'])/(transaccion['to_quantity'])
+        preciounitario = Decimal(precio_u)
+        if preciounitario >= 10:
+            pru=float('{0:.2f}'.format(preciounitario))
+        else:
+            pru=round(preciounitario, sigfigs=4, type=Decimal)
+        transaccion['preciounitario'] = pru
+    return render_template('listamovimientos.html', transacciones=transacciones) 
 
 @app.route('/compra', methods=["GET", "POST"])
 def nuevaCompra():
     form = MovementForm()
+    stock = consulta('SELECT to_currency, to_quantity FROM movements;')
+    mismonedas=['EUR']
+    for linea in stock:
+        moneda = linea['to_currency']
+        if moneda not in mismonedas:
+            mismonedas.append(moneda)
+    form.from_currency.choices=mismonedas
     if request.method == "POST":
         if 'calculadora' in request.form:
             if form.from_currency.data == form.to_currency.data:
                 flash('Las monedas son iguales.')
                 return render_template('compra.html', form=form)
-            print('¡Hola!')
             url = 'https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={}&symbol={}&convert={}&CMC_PRO_API_KEY={}'.format(form.q1.data, form.from_currency.data, form.to_currency.data, API_KEY)
             respuesta = requests.get(url)
             ey = respuesta.json()
             precio = (ey['data']['quote'][form.to_currency.data]['price'])
-            print(precio)
-            preciounitario = form.q1.data/precio
-            form.preciounitario.data=float(preciounitario)
-            form.q2.data=float(precio)
+            preciounitario = round(form.q1.data/precio, sigfigs=4)
+            form.q2.data=round(float(precio), sigfigs=4)
             return render_template("compra.html", form=form, cantidadconvertida=precio, preciounitario=preciounitario)
         else:
             if form.validate():
                 if form.from_currency.data == form.to_currency.data :
                     flash('La operación debe realizarse con monedas o criptomonedas distintas')
                     return render_template('compra.html', form=form)
-                print(request.form)
-                print(form.q2.data)
-                now = datetime.now().time()
+                today = date.today()
+                fecha = today.strftime("%d/%m/%Y")
+                hour = datetime.now().time()
                 consulta('INSERT INTO movements (date, time, from_currency, from_quantity, to_currency, to_quantity) VALUES (?, ?, ?, ?, ?, ?);', 
                         (
-                        date.today(),
-                        str(now),
+                        str(fecha),
+                        str(hour),
                         form.from_currency.data,
                         form.q1.data,
                         form.to_currency.data,
-                        form.q2.data,
+                        round(form.q2.data, sigfigs=4),
                         )
                     ) 
                 return redirect(url_for('listaMovimientos')) #te devuelve a la página principal   

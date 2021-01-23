@@ -20,7 +20,8 @@ conn.close()
 class MovementForm(FlaskForm): #hereda de FlaskForm
     from_currency = SelectField('From currency',
                             [validators.Required()],
-                            choices=listilla)
+                            choices=[])
+    print(listilla)
     q1 = FloatField('Cantidad', validators=[DataRequired()])
     to_currency = SelectField('To currency',
                             [validators.Required()],

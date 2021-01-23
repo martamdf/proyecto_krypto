@@ -48,7 +48,8 @@ Seleccione los datos de la nueva compra:
         {{ form.q2 (size=20, placeholder='Cantidad Convertida', readonly="readonly", value=cantidadconvertida) }}
     </div>
     <div class="field">
-        {{ preciounitario }}
+        Precio Unitario: 
+        {{ preciounitario }} {{form.to_currency.data}}
     </div>
     <div class="field">
         {{ form.submit }}
