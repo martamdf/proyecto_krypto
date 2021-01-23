@@ -65,6 +65,9 @@ def nuevaCompra():
             if form.from_currency.data == form.to_currency.data:
                 flash('Las monedas son iguales.')
                 return render_template('compra.html', form=form)
+            if form.from_currency.data != 'BTC' and form.to_currency.data == 'EUR':
+                flash('Solo puedes convertir a EUR desde BTC')
+                return render_template('compra.html', form=form)
             url = 'https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={}&symbol={}&convert={}&CMC_PRO_API_KEY={}'.format(form.q1.data, form.from_currency.data, form.to_currency.data, API_KEY)
             respuesta = requests.get(url)
             ey = respuesta.json()
