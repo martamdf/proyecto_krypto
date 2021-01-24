@@ -9,9 +9,10 @@
         <li><a href="./balance">Estado</a></li>
     </ul>
     <br>
-    <h2>Mis Transacciones</h2>
-
-    <br>
+    <div>
+    <h2 class="h2">Mis Transacciones</h2>
+    </div>
+<div>
     {% if transacciones|length > 0 %}
         <table class="center">
             <thead>
@@ -33,7 +34,7 @@
                 <td>{{transaccion['from_quantity']}}</td>
                 <td>{{transaccion['to_currency']}}</td>
                 <td>{{transaccion['to_quantity']}}</td>
-                <td>{{transaccion['preciounitario']}}</td>
+                <td>{{transaccion['preciounitario']}} {{transaccion['from_currency']}}</td>
             </tr>
             
             {% endfor %}
@@ -54,6 +55,7 @@
             </thead>
         </table>
     </div>
+</div>
     <br>
         <p>¡Oh no! Sin Transacciones. 😢 ¡Haz tu primera compra!.</p>
     {% endif %}

@@ -33,7 +33,7 @@ li a {
     text-decoration: none;
 }
 li a:hover:not(.active) {
-    background-color: #111;
+    background-color: #0f4577;
 }
 
 .active {
@@ -46,10 +46,14 @@ li a:hover:not(.active) {
 } */
 
 body {
-    background: #fff;
-    color: #333;
+    background: #FFF;
+    color: #0f4577;
     font-family: 'Ubuntu', sans-serif;
     position: relative;
+}
+
+h2 {
+    font-weight: 400;
 }
 
 h3 {
@@ -57,7 +61,7 @@ h3 {
 }
 
 header {
-    height: 100px;
+    height: 200px;
     color:#2a85da;
     padding-top: 9vw; 
     padding-bottom: 1vw;
@@ -81,14 +85,14 @@ footer {
     position: relative;
 }
 
-table {
+/* table {
     border: 1px solid #0f4577;
     text-align: center;
 }
 
 th {
     border: 1px solid #0f4577;
-}
+} */
 
 .error {
     color: red;
@@ -99,4 +103,54 @@ th {
     margin-left: auto; 
     margin-right: auto;
     padding: 15px;
+}
+
+*, *:before, *:after {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+table {
+    max-width: 960px;
+    margin: 10px auto;
+}
+
+caption {
+    font-size: 1.6em;
+    font-weight: 400;
+    padding: 10px 0;
+}
+
+thead th {
+    font-weight: 400;
+    background: #2a85da;
+    color: #FFF;
+}
+
+tr {
+    background: #f4f7f8;
+    border-bottom: 1px solid #FFF;
+    margin-bottom: 5px;
+}
+
+tr:nth-child(even) {
+    background: #e8eeef;
+}
+
+th, td {
+    text-align: left;
+    padding: 20px;
+    font-weight: 300;
+}
+
+tfoot tr {
+    background: none;
+}
+
+tfoot td {
+    padding: 10px 2px;
+    font-size: 0.8em;
+    font-style: italic;
+    color: #8a97a0;
 }
