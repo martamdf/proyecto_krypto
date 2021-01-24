@@ -17,11 +17,11 @@ Seleccione los datos de la nueva compra:
 
 <form action="compra", method="POST">
     {{ form.hidden_tag() }}
-    <div class="field">
+    <div id="bloc1"class="field">
         {{ form.from_currency.label }}
         {{ form.from_currency }}
     </div>
-    <div class="field">
+    <div id="bloc2" class="field">
         {{ form.to_currency.label }}
         {{ form.to_currency }}
     </div>
@@ -36,11 +36,11 @@ Seleccione los datos de la nueva compra:
             {% endif %}
         {% endwith %}
     </div>
-    <div class="field">
+    <div id="bloc3" class="field">
         {{ form.q1.label }}
         {{ form.q1 (placeholder='Cantidad')}}
     </div>
-    <div class="fa fa-calculator">
+    <div id="bloc4" class="fa fa-calculator">
         {{ form.calculadora }}
     </div>
     <div class="field">        
@@ -49,9 +49,9 @@ Seleccione los datos de la nueva compra:
     </div>
     <div class="field">
         Precio Unitario: 
-        {{ preciounitario }} {{form.from_currency.data}}
+        {{ preciounitario }} 
     </div>
-    <div class="field">
+    <div class="button button1">
         {{ form.submit }}
     </div>
 </form> 
