@@ -54,7 +54,7 @@ def listaMovimientos():
 def nuevaCompra():
     form = MovementForm()
     stock = consulta('SELECT to_currency, to_quantity FROM movements;')
-    mismonedas=['EUR']
+    mismonedas=['EUR'] #TODO: Control de importes.
     for linea in stock:
         moneda = linea['to_currency']
         if moneda not in mismonedas:
@@ -106,8 +106,9 @@ def balance():
     for euros in euros_invertidos:
         inversion+=(euros['from_quantity'])
     divisasdistintas = consulta('SELECT to_quantity, to_currency FROM movements WHERE to_currency <> "EUR"')
+    print(divisasdistintas)
     valoractual=0
-    for divisa in divisasdistintas:
+    for divisa in divisasdistintas: #TODO: Ver como arreglar esto. Lista previa. Demasiadas peticiones api, va lento. 
         url = 'https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={}&symbol={}&convert={}&CMC_PRO_API_KEY={}'.format(divisa['to_quantity'], divisa['to_currency'], 'EUR', API_KEY)
         respuesta = requests.get(url)
         ey = respuesta.json()
