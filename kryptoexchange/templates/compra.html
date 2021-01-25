@@ -25,8 +25,9 @@ Seleccione los datos de la nueva compra:
         {{ form.to_currency.label }}
         {{ form.to_currency }}
     </div>
+    
     <div class="nonw" style="background-color:red">
-        {% with messages = get_flashed_messages() %}
+        {% with messages =  get_flashed_messages() %}
             {% if messages %}
                 <ul class=flashes>
                 {% for message in messages %}
@@ -35,6 +36,7 @@ Seleccione los datos de la nueva compra:
                 </ul>
             {% endif %}
         {% endwith %}
+
     </div>
     <div id="bloc3" class="field">
         {{ form.q1.label }}

@@ -40,11 +40,6 @@ li a:hover:not(.active) {
     background-color: #0f4577;
 }
 
-  /* Change the link color to #111 (black) on hover */
-/* li a:hover {
-    background: #333;
-} */
-
 body {
     background: #FFF;
     color: #0f4577;
@@ -109,15 +104,6 @@ footer {
     text-align: center;
     position: relative;
 }
-
-/* table {
-    border: 1px solid #0f4577;
-    text-align: center;
-}
-
-th {
-    border: 1px solid #0f4577;
-} */
 
 .error {
     color: red;
@@ -184,19 +170,4 @@ tfoot td {
 	font-size: 20;
     margin: 10px auto;
     padding: 10px;
-}
-
-#bloc1, #bloc2
-{
-    display:inline;
-    padding: 10px;
-}
-
-#bloc3, #bloc4
-{
-    display:inline;
-    padding-top: 10px;
-    padding-right: 10px;
-    padding-bottom: 10px;
-    padding-left: 10px;
 }

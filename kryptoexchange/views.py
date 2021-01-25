@@ -77,8 +77,16 @@ def nuevaCompra():
             return render_template("compra.html", form=form, cantidadconvertida=precio, preciounitario=preciounitario)
         else:
             if form.validate():
-                if form.from_currency.data == form.to_currency.data :
-                    flash('La operación debe realizarse con monedas o criptomonedas distintas')
+                carteraactual={}
+                divisasdistintas = consulta('SELECT to_quantity, to_currency FROM movements WHERE to_currency <> "EUR"')
+                for cripto in divisasdistintas:
+                    if cripto['to_currency'] not in carteraactual:
+                        carteraactual[cripto['to_currency']]=cripto['to_quantity']
+                    else:
+                        carteraactual[cripto['to_currency']]=cripto['to_quantity']+(carteraactual[cripto['to_currency']])
+                disponible=float((carteraactual[form.from_currency.data]))
+                if float(form.q1.data) > disponible:
+                    flash('No tienes suficiente saldo para realizar la operación.')
                     return render_template('compra.html', form=form)
                 today = date.today()
                 fecha = today.strftime("%d/%m/%Y")
@@ -103,17 +111,24 @@ def nuevaCompra():
 def balance():
     euros_invertidos = consulta('SELECT from_quantity FROM movements WHERE from_currency = "EUR"')
     inversion=0
+    carteraactual={}
     for euros in euros_invertidos:
         inversion+=(euros['from_quantity'])
     divisasdistintas = consulta('SELECT to_quantity, to_currency FROM movements WHERE to_currency <> "EUR"')
-    print(divisasdistintas)
+    for cripto in divisasdistintas:
+        if cripto['to_currency'] not in carteraactual:
+            carteraactual[cripto['to_currency']]=cripto['to_quantity']
+        else:
+            carteraactual[cripto['to_currency']]=cripto['to_quantity']+(carteraactual[cripto['to_currency']])
+    print (carteraactual)
     valoractual=0
-    for divisa in divisasdistintas: #TODO: Ver como arreglar esto. Lista previa. Demasiadas peticiones api, va lento. 
-        url = 'https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={}&symbol={}&convert={}&CMC_PRO_API_KEY={}'.format(divisa['to_quantity'], divisa['to_currency'], 'EUR', API_KEY)
+    for clave, valor in carteraactual.items():
+        url = 'https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={}&symbol={}&convert={}&CMC_PRO_API_KEY={}'.format(valor, clave, 'EUR', API_KEY)
         respuesta = requests.get(url)
         ey = respuesta.json()
         precio = (ey['data']['quote']['EUR']['price'])
+        print(precio)
         valoractual += precio
-    print(valoractual)
+    print(inversion)
     balance=valoractual-inversion
     return render_template('balance.html', inversion=inversion, valoractual=valoractual, balance=balance)
