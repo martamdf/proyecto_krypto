@@ -54,7 +54,7 @@ def listaMovimientos():
 def nuevaCompra():
     form = MovementForm()
     stock = consulta('SELECT to_currency, to_quantity FROM movements;')
-    mismonedas=['EUR'] #TODO: Control de importes.
+    mismonedas=['EUR']
     for linea in stock:
         moneda = linea['to_currency']
         if moneda not in mismonedas:
@@ -70,11 +70,15 @@ def nuevaCompra():
                 return render_template('compra.html', form=form)
             url = 'https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={}&symbol={}&convert={}&CMC_PRO_API_KEY={}'.format(form.q1.data, form.from_currency.data, form.to_currency.data, API_KEY)
             respuesta = requests.get(url)
-            ey = respuesta.json()
-            precio = (ey['data']['quote'][form.to_currency.data]['price'])
-            preciounitario = round(form.q1.data/precio, sigfigs=4)
-            form.q2.data=round(float(precio), sigfigs=4)
-            return render_template("compra.html", form=form, cantidadconvertida=precio, preciounitario=preciounitario)
+            if respuesta.status_code ==200:
+                ey = respuesta.json()
+                precio = (ey['data']['quote'][form.to_currency.data]['price'])
+                preciounitario = round(form.q1.data/precio, sigfigs=4)
+                form.q2.data=round(float(precio), sigfigs=4)
+                return render_template("compra.html", form=form, cantidadconvertida=precio, preciounitario=preciounitario)
+            else:
+                flash('Se ha producido un error. APIKEY incorrecta')
+                return render_template('compra.html', form=form)
         else:
             if form.validate():
                 carteraactual={}
