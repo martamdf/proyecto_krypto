@@ -13,49 +13,58 @@
 <br>
 Seleccione los datos de la nueva compra:
 <br>
-<br>
 
-<form action="compra", method="POST">
-    {{ form.hidden_tag() }}
-    <div id="bloc1"class="field">
-        {{ form.from_currency.label }}
-        {{ form.from_currency }}
-    </div>
-    <div id="bloc2" class="field">
-        {{ form.to_currency.label }}
-        {{ form.to_currency }}
-    </div>
     
-    <div class="error" style="background-color:red">
-        {% with messages =  get_flashed_messages() %}
-            {% if messages %}
-                <ul class=flashes>
-                {% for message in messages %}
-                <li>{{ message }}</li>
-                {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
-    </div>
-    <div id="bloc3" class="field">
-        {{ form.q1.label }}
-        {{ form.q1 (placeholder='Cantidad')}}
-    </div>
-    <div id="bloc4" class="fa fa-calculator">
-        {{ form.calculadora }}
-    </div>
-    <div class="field">        
-        {{ form.q2.label }}
-        {{ form.q2 (size=20, placeholder='Cantidad Convertida', readonly="readonly", value=cantidadconvertida) }}
-    </div>
-    <div class="field">
-        Precio Unitario: 
-        {{ preciounitario }} 
-    </div>
-    <div class="button button1">
-        {{ form.submit }}
-    </div>
-</form> 
+    <form action="compra", method="POST">
+        {{ form.hidden_tag() }}
+        <table>
+        <tr>
+            <th class="formulario" style="background-color: #e7eeef;">
+                {{ form.from_currency.label }}
+                {{ form.from_currency }}
+            </th>
+            <th class="formulario" style="background-color: #e7eeef;">
+                {{ form.to_currency.label }}
+                {{ form.to_currency }}
+            </th>
+        </tr>
+            <div class="error" style="background-color:red">
+                {% with messages =  get_flashed_messages() %}
+                    {% if messages %}
+                        <ul class=flashes>
+                        {% for message in messages %}
+                        <li>{{ message }}</li>
+                        {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
+            </div>
+        <tr>
+            <th class="formulario" style="background-color: #e7eeef;">
+                {{ form.q1.label }}
+                {{ form.q1 (placeholder='Cantidad')}}
+            </th>
+            <th class="fa fa-calculator" style="background-color: #e7eeef;">
+                {{ form.calculadora }}
+            </th>
+        </tr>
+        <tr>
+            <th class="formulario" style="background-color: #e7eeef;">        
+                {{ form.q2.label }}
+                {{ form.q2 (size=20, placeholder='Cantidad Convertida', readonly="readonly", value=cantidadconvertida) }}
+            </th>
+            <th class="formulario" style="background-color: #e7eeef;">
+                Precio Unitario: 
+                {{ preciounitario }} 
+            </th>
+        </tr>
+        <tr>
+            <th class="button button1">
+                {{ form.submit }}
+            </th>
+        </tr>
+    </form> 
+</table>
 
 
 {%endblock%}

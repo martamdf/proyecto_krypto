@@ -10,6 +10,7 @@ from decimal import Decimal
 DBfile = app.config['DBFILE']
 API_KEY = app.config['API_KEY']
 
+
 def consulta (query, params=()):
     conn = sqlite3.connect(DBfile)
     c = conn.cursor()
@@ -37,6 +38,15 @@ def consulta (query, params=()):
     
     return listaDeDiccionarios
 
+def monedas_disponibles():
+    stock = consulta('SELECT to_currency, to_quantity FROM movements;')
+    mismonedas=['EUR']
+    for linea in stock:
+        moneda = linea['to_currency']
+        if moneda not in mismonedas:
+            mismonedas.append(moneda)
+    return mismonedas
+
 @app.route('/')
 def listaMovimientos():
     transacciones = consulta('SELECT id , date, time, from_currency, from_quantity, to_currency, to_quantity FROM movements;')
@@ -53,12 +63,7 @@ def listaMovimientos():
 @app.route('/compra', methods=["GET", "POST"])
 def nuevaCompra():
     form = MovementForm()
-    stock = consulta('SELECT to_currency, to_quantity FROM movements;')
-    mismonedas=['EUR']
-    for linea in stock:
-        moneda = linea['to_currency']
-        if moneda not in mismonedas:
-            mismonedas.append(moneda)
+    mismonedas = monedas_disponibles()
     form.from_currency.choices=mismonedas
     if request.method == "POST":
         if 'calculadora' in request.form:
@@ -67,6 +72,9 @@ def nuevaCompra():
                 return render_template('compra.html', form=form)
             if form.from_currency.data != 'BTC' and form.to_currency.data == 'EUR':
                 flash('Solo puedes convertir a EUR desde BTC')
+                return render_template('compra.html', form=form)
+            if form.q1.data > 1000000000:
+                flash('El importe máximo de conversión es de 1000000000')
                 return render_template('compra.html', form=form)
             url = 'https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={}&symbol={}&convert={}&CMC_PRO_API_KEY={}'.format(form.q1.data, form.from_currency.data, form.to_currency.data, API_KEY)
             respuesta = requests.get(url)
@@ -78,6 +86,7 @@ def nuevaCompra():
                 return render_template("compra.html", form=form, cantidadconvertida=precio, preciounitario=preciounitario)
             else:
                 flash('Se ha producido un error. APIKEY incorrecta')
+                print(respuesta)
                 return render_template('compra.html', form=form)
         else:
             if form.validate():
@@ -88,8 +97,10 @@ def nuevaCompra():
                         carteraactual[cripto['to_currency']]=cripto['to_quantity']
                     else:
                         carteraactual[cripto['to_currency']]=cripto['to_quantity']+(carteraactual[cripto['to_currency']])
-                disponible=float((carteraactual[form.from_currency.data]))
-                if float(form.q1.data) > disponible:
+                print(carteraactual)
+                if form.from_currency.data != 'EUR':
+                    disponible=float((carteraactual[form.from_currency.data]))
+                if form.from_currency.data !='EUR' and float(form.q1.data) > disponible:
                     flash('No tienes suficiente saldo para realizar la operación.')
                     return render_template('compra.html', form=form)
                 today = date.today()
