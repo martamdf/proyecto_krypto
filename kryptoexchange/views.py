@@ -66,9 +66,14 @@ def nuevaCompra():
     mismonedas = monedas_disponibles()
     form.from_currency.choices=mismonedas
     if request.method == "POST":
+        print(request.form)
+        print(form.q2.data)
         if 'calculadora' in request.form:
             if form.from_currency.data == form.to_currency.data:
                 flash('Las monedas son iguales.')
+                return render_template('compra.html', form=form)
+            if form.from_currency.data == 'EUR' and form.to_currency.data != 'BTC':
+                flash('Solo puedes utilizar BTCs para comprar esta moneda')
                 return render_template('compra.html', form=form)
             if form.from_currency.data != 'BTC' and form.to_currency.data == 'EUR':
                 flash('Solo puedes convertir a EUR desde BTC')
@@ -118,9 +123,9 @@ def nuevaCompra():
                     ) 
                 return redirect(url_for('listaMovimientos')) #te devuelve a la página principal   
             else:
+                flash('Completa todos los datos del formulario antes de comprar.')
                 return render_template("compra.html", form=form)
     return render_template("compra.html", form=form)
-
 
 @app.route('/balance')
 def balance():
@@ -137,13 +142,13 @@ def balance():
             carteraactual[cripto['to_currency']]=cripto['to_quantity']+(carteraactual[cripto['to_currency']])
     print (carteraactual)
     valoractual=0
-    for clave, valor in carteraactual.items():
+    for clave, valor in carteraactual.items():#TODO: OJO EXCEPCIONES API
         url = 'https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={}&symbol={}&convert={}&CMC_PRO_API_KEY={}'.format(valor, clave, 'EUR', API_KEY)
         respuesta = requests.get(url)
         ey = respuesta.json()
         precio = (ey['data']['quote']['EUR']['price'])
         print(precio)
         valoractual += precio
-    print(inversion)
-    balance=valoractual-inversion
-    return render_template('balance.html', inversion=inversion, valoractual=valoractual, balance=balance)
+    balance=round(valoractual-inversion, decimals=2)
+    misaldo=round(valoractual, decimals=2)
+    return render_template('balance.html', inversion=inversion, valoractual=misaldo, balance=balance)

@@ -19,49 +19,46 @@ Seleccione los datos de la nueva compra:
         {{ form.hidden_tag() }}
         <table>
         <tr>
-            <th class="formulario" style="background-color: #e7eeef;">
+            <td class="formulario" style="background-color: #e7eeef;">
                 {{ form.from_currency.label }}
                 {{ form.from_currency }}
-            </th>
-            <th class="formulario" style="background-color: #e7eeef;">
+            </td>
+            <td class="formulario" style="background-color: #e7eeef;">
                 {{ form.to_currency.label }}
                 {{ form.to_currency }}
-            </th>
+            </td>
         </tr>
             <div class="error" style="background-color:red">
                 {% with messages =  get_flashed_messages() %}
                     {% if messages %}
                         <ul class=flashes>
                         {% for message in messages %}
-                        <li>{{ message }}</li>
+                        <li style="background-color: red;">{{ message }}</li>
                         {% endfor %}
                         </ul>
                     {% endif %}
                 {% endwith %}
             </div>
         <tr>
-            <th class="formulario" style="background-color: #e7eeef;">
+            <td class="formulario" style="background-color: #e7eeef;" style="margin: 20;" rowspan="2">
                 {{ form.q1.label }}
                 {{ form.q1 (placeholder='Cantidad')}}
-            </th>
-            <th class="fa fa-calculator" style="background-color: #e7eeef;">
                 {{ form.calculadora }}
-            </th>
-        </tr>
-        <tr>
-            <th class="formulario" style="background-color: #e7eeef;">        
+            </td>
+            <td class="formulario" style="background-color: #e7eeef;">        
                 {{ form.q2.label }}
-                {{ form.q2 (size=20, placeholder='Cantidad Convertida', readonly="readonly", value=cantidadconvertida) }}
-            </th>
-            <th class="formulario" style="background-color: #e7eeef;">
+                {{ form.q2 (size=20, readonly="readonly", value=cantidadconvertida) }}
+            </td>
+        <tr>
+            <td class="formulario" style="background-color: #e7eeef;">
                 Precio Unitario: 
                 {{ preciounitario }} 
-            </th>
+            </td>
         </tr>
         <tr>
-            <th class="button button1">
+            <td colspan="2">
                 {{ form.submit }}
-            </th>
+            </td>
         </tr>
     </form> 
 </table>
