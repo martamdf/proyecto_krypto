@@ -25,8 +25,7 @@ class MovementForm(FlaskForm): #hereda de FlaskForm
     to_currency = SelectField('To currency',
                             [validators.Required()],
                             choices=listilla)
-    q2 = FloatField('Cantidad comprada', validators=None)
-    hiddenq2 = HiddenField()
+    q2 = FloatField('Importe a adquirir', validators=None)
     preciounitario = FloatField('Cantidad comprada', validators=None)
     calculadora = SubmitField('')
     submit = SubmitField('¡Compra ya!')

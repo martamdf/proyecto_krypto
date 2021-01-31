@@ -81,7 +81,6 @@ def nuevaCompra():
             if form.from_currency.data != 'BTC' and form.to_currency.data == 'EUR':
                 flash('Solo puedes convertir a EUR desde BTC')
                 return render_template('compra.html', form=form)
-            print(form.q1.data)
             if form.q1.data > 1000000000:
                 flash('El importe máximo de conversión es de 1000000000')
                 return render_template('compra.html', form=form)
@@ -91,8 +90,14 @@ def nuevaCompra():
                 ey = respuesta.json()
                 precio = (ey['data']['quote'][form.to_currency.data]['price'])
                 preciounitario = round(form.q1.data/precio, sigfigs=4)
+                print(preciounitario)
+                if preciounitario >= 10:
+                    pru=float('{0:.2f}'.format(preciounitario))
+                else:
+                    pru=round(preciounitario, sigfigs=4, type=Decimal)
+                    
                 form.q2.data=round(float(precio), sigfigs=4)
-                return render_template("compra.html", form=form, cantidadconvertida=precio, preciounitario=preciounitario)
+                return render_template("compra.html", form=form, cantidadconvertida=precio, preciounitario=pru)
             else:
                 flash('Se ha producido un error. APIKEY incorrecta')
                 print(respuesta)
