@@ -1,6 +1,6 @@
 from kryptoexchange import app
 from flask_wtf import FlaskForm
-from wtforms import DateField, TimeField, StringField, SubmitField, DecimalField, FloatField, SelectField, validators
+from wtforms import DateField, TimeField, StringField, SubmitField, HiddenField, DecimalField, FloatField, SelectField, validators
 from wtforms.validators import DataRequired, Length
 import sqlite3
 
@@ -26,10 +26,8 @@ class MovementForm(FlaskForm): #hereda de FlaskForm
                             [validators.Required()],
                             choices=listilla)
     q2 = FloatField('Cantidad comprada', validators=None)
+    hiddenq2 = HiddenField()
     preciounitario = FloatField('Cantidad comprada', validators=None)
-    calculadora = SubmitField('Calcula')
+    calculadora = SubmitField('')
     submit = SubmitField('¡Compra ya!')
 
-
-
-#This class_ param it's applied in the class of the button in HTML.

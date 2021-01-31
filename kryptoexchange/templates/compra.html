@@ -9,59 +9,60 @@
     <li><a href="./balance">Estado</a></li>
 </ul>
 <br>
-<h1>Nueva Compra</h1>
+<h1>NUEVA COMPRA</h1>
 <br>
 Seleccione los datos de la nueva compra:
 <br>
 
-    
-    <form action="compra", method="POST">
-        {{ form.hidden_tag() }}
-        <table>
-        <tr>
-            <td class="formulario" style="background-color: #e7eeef;">
-                {{ form.from_currency.label }}
-                {{ form.from_currency }}
-            </td>
-            <td class="formulario" style="background-color: #e7eeef;">
-                {{ form.to_currency.label }}
-                {{ form.to_currency }}
-            </td>
-        </tr>
-            <div class="error" style="background-color:red">
-                {% with messages =  get_flashed_messages() %}
-                    {% if messages %}
-                        <ul class=flashes>
-                        {% for message in messages %}
-                        <li style="background-color: red;">{{ message }}</li>
-                        {% endfor %}
-                        </ul>
-                    {% endif %}
-                {% endwith %}
+<form action="compra", method="POST">
+    {{ form.hidden_tag() }}
+    <div>
+        {% with messages =  get_flashed_messages() %}
+            {% if messages %}
+                <div class=error>
+                {% for message in messages %}
+                <li class= error>{{ message }}</li>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
             </div>
-        <tr>
-            <td class="formulario" style="background-color: #e7eeef;" style="margin: 20;" rowspan="2">
-                {{ form.q1.label }}
-                {{ form.q1 (placeholder='Cantidad')}}
-                {{ form.calculadora }}
-            </td>
-            <td class="formulario" style="background-color: #e7eeef;">        
-                {{ form.q2.label }}
-                {{ form.q2 (size=20, readonly="readonly", value=cantidadconvertida) }}
-            </td>
-        <tr>
-            <td class="formulario" style="background-color: #e7eeef;">
-                Precio Unitario: 
-                {{ preciounitario }} 
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                {{ form.submit }}
-            </td>
-        </tr>
-    </form> 
+    <table >
+    <tr style="border: 1px red">
+        <td>
+            {{ form.from_currency.label }}
+            {{ form.from_currency }}
+        </td>
+        <td>
+            {{ form.to_currency.label }}  
+            {{ form.to_currency }}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            {{ form.q1.label }}
+            {{ form.q1 (placeholder='Introduce la cantidad')}}
+            {{ form.calculadora (class="calculadora") }}
+        </td>
+        {% if form.q2.data != None %}
+        <td>        
+            {{ form.q2.label }}
+            {{ form.q2 (size=20, readonly="readonly", value=cantidadconvertida) }}
+        </td>
+    <tr>
+        <td colspan="2">
+            Precio Unitario: 
+            {{ preciounitario }}  
+        </td>
+        {% endif %}
+    </tr>
+    <tr>
+        <td colspan="2">
+            {{ form.submit }}
+        </td>
+    </tr>
 </table>
+</form> 
 
 
 {%endblock%}

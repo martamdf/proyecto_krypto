@@ -5,19 +5,9 @@
     padding: 0;
 }
 
-/* #calculadora {
-    background-color:#2a85da; /* Green */
-/*     border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-} */ 
 
 #calculadora  {
-    content: "\25AE";
+    content: "";
 	box-shadow:inset 0px 1px 0px 0px #54a3f7;
 	background:linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
 	background-color:#007dc1;
@@ -26,7 +16,7 @@
 	display:inline-block;
 	cursor:pointer;
 	color:#ffffff;
-	font-family:Arial;
+	font-family:"FontAwesome";
 	font-size:13px;
     padding:5px 24px;
 	text-decoration:none;
@@ -42,6 +32,7 @@
 }
 
 #submit  {
+    content: "";
 	box-shadow:inset 0px 1px 0px 0px #54a3f7;
 	background:linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
 	background-color:#007dc1;
@@ -50,7 +41,7 @@
 	display:inline-block;
 	cursor:pointer;
 	color:#ffffff;
-	font-family:Arial;
+	font-family:"FontAwesome";
 	font-size:13px;
 	padding:6px 70px;
 	text-decoration:none;
@@ -67,12 +58,21 @@
 
 #q1{
     padding:5px 24px ;
+    border-radius: 5px;
 }
+
+#q2{
+    padding:5px 24px ;
+    border-radius: 5px;
+    background-color: #dcdee1;
+}
+
 #from_currency{
     padding: 5px 60px;
     width: 290px;
     height: 30px;
     border: none;
+    font-size: 10px;
 }
 
 #to_currency{
@@ -134,7 +134,7 @@ h3 {
 
 header {
     height: 200px;
-    color:#2a85da;
+    color:#0f4577;
     padding-top: 9vw; 
     padding-bottom: 1vw;
     padding-right: 1vw;
@@ -161,18 +161,7 @@ main {
     font-size: 16px;
     margin: 4px 2px;
     transition-duration: 0.4s;
-    cursor: pointer !important;
-}
-
-.button1 {
-    background-color: #2a85da; 
-    color: black; 
-    border: 2px solid #2a85da !important;
-}
-
-.button1:hover {
-    background-color: #0f4577;
-    color: white !important;
+    cursor: pointer;
 }
 
 footer {
@@ -182,12 +171,19 @@ footer {
     position: relative;
 }
 
-.error {
-    color: rgb(255, 228, 228);
-    text-align: justify;
-    width: 200px;
-    margin: auto;
-    padding-top: 20;
+ul.error, li.error {
+    font-family: Arial, Helvetica, sans-serif;
+    border: 1px solid;
+    margin: 10px 0px;
+    padding: 15px 10px 15px 50px;
+    background-repeat: no-repeat;
+    background-position: 10px center;
+    text-align: center;
+    color: #D8000C;
+    background-color: #FFBABA;
+    background-image: url('https://i.imgur.com/GnyDvKN.png');
+    float: none;
+    border-radius: 5px;
 }
 
 .center {
@@ -205,6 +201,7 @@ footer {
 table {
     max-width: 960px;
     margin: 10px auto;
+    border-radius: 5px;
 }
 
 caption {
@@ -250,4 +247,8 @@ tfoot td {
 	font-size: 30;
     margin: 10px auto;
     padding: 50px;
+}
+.calculadora {
+    font-family: "FontAwesome";
+    width: 60px;
 }

@@ -69,8 +69,11 @@ def nuevaCompra():
         print(request.form)
         print(form.q2.data)
         if 'calculadora' in request.form:
+            if form.q1.data == None or isinstance (form.q1.data, str) or form.q1.data <= 0 :
+                flash('Formato numérico introducido no válido')
+                return render_template('compra.html', form=form)
             if form.from_currency.data == form.to_currency.data:
-                flash('Las monedas son iguales.')
+                flash('Error: Las monedas no pueden ser iguales.')
                 return render_template('compra.html', form=form)
             if form.from_currency.data == 'EUR' and form.to_currency.data != 'BTC':
                 flash('Solo puedes utilizar BTCs para comprar esta moneda')
@@ -78,6 +81,7 @@ def nuevaCompra():
             if form.from_currency.data != 'BTC' and form.to_currency.data == 'EUR':
                 flash('Solo puedes convertir a EUR desde BTC')
                 return render_template('compra.html', form=form)
+            print(form.q1.data)
             if form.q1.data > 1000000000:
                 flash('El importe máximo de conversión es de 1000000000')
                 return render_template('compra.html', form=form)
