@@ -58,6 +58,7 @@ def monedas_disponibles():
 def listaMovimientos():
     transacciones = consulta('SELECT id , date, time, from_currency, from_quantity, to_currency, to_quantity FROM movements;')
     for transaccion in transacciones:
+        print(transaccion)
         precio_u = (transaccion['from_quantity'])/(transaccion['to_quantity'])
         transaccion['preciounitario'] = redondea_valor(precio_u)
     return render_template('listamovimientos.html', transacciones=transacciones) 
@@ -68,7 +69,6 @@ def nuevaCompra():
     mismonedas = monedas_disponibles()
     form.from_currency.choices=mismonedas
     if request.method == "POST":
-        print(request.form)
         if 'calculadora' in request.form:
             if form.q1.data == None or isinstance (form.q1.data, str) or form.q1.data <= 0 :
                 flash('Formato numérico introducido no válido')
@@ -90,9 +90,15 @@ def nuevaCompra():
             if respuesta.status_code ==200:
                 ey = respuesta.json()
                 precio = (ey['data']['quote'][form.to_currency.data]['price'])
-                form.q2.data = redondea_valor(precio)
+                cantidadconvertida = redondea_valor(precio)
+                form.q2.data = cantidadconvertida
+                form.q2_hidden.data = cantidadconvertida
+                form.q1_hidden.data = form.q1.data
+                form.to_currency_hidden.data = form.to_currency.data
+                form.from_currency_hidden.data = form.from_currency.data
                 preciounitario = redondea_valor(form.q1.data/precio)
-                return render_template("compra.html", form=form, preciounitario=preciounitario)
+                form.preciounitario_hidden.data = preciounitario
+                return render_template("compra.html", form=form, cantidadconvertida=cantidadconvertida, preciounitario=preciounitario)
             else:
                 flash('Se ha producido un error. APIKEY incorrecta')
                 return render_template('compra.html', form=form)
@@ -105,10 +111,9 @@ def nuevaCompra():
                         carteraactual[cripto['to_currency']]=cripto['to_quantity']
                     else:
                         carteraactual[cripto['to_currency']]=cripto['to_quantity']+(carteraactual[cripto['to_currency']])
-                print(carteraactual)
-                if form.from_currency.data != 'EUR':
-                    disponible=float((carteraactual[form.from_currency.data]))
-                if form.from_currency.data !='EUR' and float(form.q1.data) > disponible:
+                if form.from_currency_hidden.data != 'EUR':
+                    disponible=float((carteraactual[form.from_currency_hidden.data]))
+                if form.from_currency_hidden.data !='EUR' and float(form.q1_hidden.data) > disponible:
                     flash('No tienes suficiente saldo para realizar la operación.')
                     return render_template('compra.html', form=form)
                 today = date.today()
@@ -118,10 +123,10 @@ def nuevaCompra():
                         (
                         str(fecha),
                         str(hour),
-                        form.from_currency.data,
-                        form.q1.data,
-                        form.to_currency.data,
-                        round(form.q2.data, sigfigs=4),
+                        form.from_currency_hidden.data,
+                        form.q1_hidden.data,
+                        form.to_currency_hidden.data,
+                        round(form.q2_hidden.data, sigfigs=4),
                         )
                     ) 
                 return redirect(url_for('listaMovimientos')) #te devuelve a la página principal   
@@ -132,26 +137,35 @@ def nuevaCompra():
 
 @app.route('/balance')
 def balance():
-    euros_invertidos = consulta('SELECT from_quantity FROM movements WHERE from_currency = "EUR"')
-    inversion=0
+    euros_from = consulta('SELECT from_quantity FROM movements WHERE from_currency = "EUR"')
+    euros_to = consulta('SELECT to_quantity FROM movements WHERE to_currency = "EUR"')
+    saldo_euros_invertidos=0
+    total_euros_invertidos=0
     carteraactual={}
-    for euros in euros_invertidos:
-        inversion+=(euros['from_quantity'])
-    divisasdistintas = consulta('SELECT to_quantity, to_currency FROM movements WHERE to_currency <> "EUR"')
-    for cripto in divisasdistintas:
-        if cripto['to_currency'] not in carteraactual:
-            carteraactual[cripto['to_currency']]=cripto['to_quantity']
+    for euros in euros_from:
+        total_euros_invertidos += (euros['from_quantity'])
+        saldo_euros_invertidos = saldo_euros_invertidos - (euros['from_quantity'])
+    for euros in euros_to:
+        saldo_euros_invertidos = saldo_euros_invertidos + (euros['to_quantity'])
+    transacciones = consulta('SELECT from_currency, from_quantity, to_currency, to_quantity FROM movements;')
+    for transaccion in transacciones:
+        if transaccion['to_currency'] not in carteraactual:
+            carteraactual[transaccion['to_currency']]=transaccion['to_quantity']
+            if transaccion['from_currency'] in carteraactual:
+                carteraactual[transaccion['from_currency']]= (carteraactual[transaccion['from_currency']]) - transaccion['from_quantity']
         else:
-            carteraactual[cripto['to_currency']]=cripto['to_quantity']+(carteraactual[cripto['to_currency']])
-    print (carteraactual)
+            carteraactual[transaccion['to_currency']]=transaccion['to_quantity']+(carteraactual[transaccion['to_currency']])
+            if transaccion['from_currency'] in carteraactual:
+                carteraactual[transaccion['from_currency']]= (carteraactual[transaccion['from_currency']]) - transaccion['from_quantity']
+    carteraactual.pop('EUR')
     valoractual=0
     for clave, valor in carteraactual.items():#TODO: OJO EXCEPCIONES API
         url = 'https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={}&symbol={}&convert={}&CMC_PRO_API_KEY={}'.format(valor, clave, 'EUR', API_KEY)
         respuesta = requests.get(url)
         ey = respuesta.json()
         precio = (ey['data']['quote']['EUR']['price'])
-        print(precio)
         valoractual += precio
-    balance=round(valoractual-inversion, decimals=2)
     misaldo=round(valoractual, decimals=2)
-    return render_template('balance.html', inversion=inversion, valoractual=misaldo, balance=balance)
+    misaldo= total_euros_invertidos + saldo_euros_invertidos + valoractual
+    balance = misaldo - total_euros_invertidos
+    return render_template('balance.html', inversion=total_euros_invertidos, valoractual=misaldo, balance=balance)
