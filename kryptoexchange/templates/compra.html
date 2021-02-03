@@ -47,7 +47,7 @@ Seleccione los datos de la nueva compra:
         {% if form.q2.data != None %}
         <td>        
             {{ form.q2.label }}
-            {{ form.q2 (size=20, readonly="readonly", value=cantidadconvertida) }} {{form.to_currency.data}}
+            {{ form.q2 (size=20, readonly="readonly") }} {{form.to_currency.data}}
         </td>
     <tr>
         <td colspan="2">

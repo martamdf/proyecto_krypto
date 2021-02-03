@@ -10,6 +10,13 @@ from decimal import Decimal
 DBfile = app.config['DBFILE']
 API_KEY = app.config['API_KEY']
 
+def redondea_valor(precio):
+    precio_bruto = Decimal(precio)
+    if precio_bruto >= 10:
+        precio_redondeado=float('{0:.2f}'.format(precio_bruto))
+    else:
+        precio_redondeado=round(precio_bruto, sigfigs=4, type=Decimal)
+    return precio_redondeado
 
 def consulta (query, params=()):
     conn = sqlite3.connect(DBfile)
@@ -52,12 +59,7 @@ def listaMovimientos():
     transacciones = consulta('SELECT id , date, time, from_currency, from_quantity, to_currency, to_quantity FROM movements;')
     for transaccion in transacciones:
         precio_u = (transaccion['from_quantity'])/(transaccion['to_quantity'])
-        preciounitario = Decimal(precio_u)
-        if preciounitario >= 10:
-            pru=float('{0:.2f}'.format(preciounitario))
-        else:
-            pru=round(preciounitario, sigfigs=4, type=Decimal)
-        transaccion['preciounitario'] = pru
+        transaccion['preciounitario'] = redondea_valor(precio_u)
     return render_template('listamovimientos.html', transacciones=transacciones) 
 
 @app.route('/compra', methods=["GET", "POST"])
@@ -67,7 +69,6 @@ def nuevaCompra():
     form.from_currency.choices=mismonedas
     if request.method == "POST":
         print(request.form)
-        print(form.q2.data)
         if 'calculadora' in request.form:
             if form.q1.data == None or isinstance (form.q1.data, str) or form.q1.data <= 0 :
                 flash('Formato numérico introducido no válido')
@@ -89,18 +90,11 @@ def nuevaCompra():
             if respuesta.status_code ==200:
                 ey = respuesta.json()
                 precio = (ey['data']['quote'][form.to_currency.data]['price'])
-                preciounitario = round(form.q1.data/precio, sigfigs=4)
-                print(preciounitario)
-                if preciounitario >= 10:
-                    pru=float('{0:.2f}'.format(preciounitario))
-                else:
-                    pru=round(preciounitario, sigfigs=4, type=Decimal)
-                    
-                form.q2.data=round(float(precio), sigfigs=4)
-                return render_template("compra.html", form=form, cantidadconvertida=precio, preciounitario=pru)
+                form.q2.data = redondea_valor(precio)
+                preciounitario = redondea_valor(form.q1.data/precio)
+                return render_template("compra.html", form=form, preciounitario=preciounitario)
             else:
                 flash('Se ha producido un error. APIKEY incorrecta')
-                print(respuesta)
                 return render_template('compra.html', form=form)
         else:
             if form.validate():
