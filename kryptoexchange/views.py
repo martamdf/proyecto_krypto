@@ -104,6 +104,7 @@ def nuevaCompra():
                 return render_template('compra.html', form=form)
         else:
             if form.validate():
+                print(request.form)
                 carteraactual={}
                 divisasdistintas = consulta('SELECT to_quantity, to_currency FROM movements WHERE to_currency <> "EUR"')
                 for cripto in divisasdistintas:
@@ -149,6 +150,7 @@ def balance():
         saldo_euros_invertidos = saldo_euros_invertidos + (euros['to_quantity'])
     transacciones = consulta('SELECT from_currency, from_quantity, to_currency, to_quantity FROM movements;')
     for transaccion in transacciones:
+        print(transaccion)
         if transaccion['to_currency'] not in carteraactual:
             carteraactual[transaccion['to_currency']]=transaccion['to_quantity']
             if transaccion['from_currency'] in carteraactual:
@@ -157,15 +159,18 @@ def balance():
             carteraactual[transaccion['to_currency']]=transaccion['to_quantity']+(carteraactual[transaccion['to_currency']])
             if transaccion['from_currency'] in carteraactual:
                 carteraactual[transaccion['from_currency']]= (carteraactual[transaccion['from_currency']]) - transaccion['from_quantity']
-    carteraactual.pop('EUR')
+
     valoractual=0
-    for clave, valor in carteraactual.items():#TODO: OJO EXCEPCIONES API
-        url = 'https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={}&symbol={}&convert={}&CMC_PRO_API_KEY={}'.format(valor, clave, 'EUR', API_KEY)
-        respuesta = requests.get(url)
-        ey = respuesta.json()
-        precio = (ey['data']['quote']['EUR']['price'])
+    for clave, valor in carteraactual.items(): #TODO: OJO EXCEPCIONES API
+        if valor == 0:
+            precio = 0
+        else:
+            url = 'https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={}&symbol={}&convert={}&CMC_PRO_API_KEY={}'.format(valor, clave, 'EUR', API_KEY)
+            respuesta = requests.get(url)
+            ey = respuesta.json()
+            precio = (ey['data']['quote']['EUR']['price'])
         valoractual += precio
     misaldo=round(valoractual, decimals=2)
     misaldo= total_euros_invertidos + saldo_euros_invertidos + valoractual
-    balance = misaldo - total_euros_invertidos
+    balance = round((misaldo - total_euros_invertidos), decimals=3)
     return render_template('balance.html', inversion=total_euros_invertidos, valoractual=misaldo, balance=balance)

@@ -21,7 +21,7 @@ class MovementForm(FlaskForm): #hereda de FlaskForm
     from_currency = SelectField('From currency',
                             [validators.Required()],
                             choices=[])
-    from_currency_hidden=HiddenField()
+    from_currency_hidden=HiddenField('hidden')
     q1 = FloatField('Cantidad', validators=[DataRequired()])
     q1_hidden = HiddenField()
     to_currency = SelectField('To currency',
