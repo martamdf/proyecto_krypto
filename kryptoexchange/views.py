@@ -19,6 +19,7 @@ def redondea_valor(precio):
     return precio_redondeado
 
 def consulta (query, params=()):
+
     conn = sqlite3.connect(DBfile)
     c = conn.cursor()
     
@@ -42,31 +43,51 @@ def consulta (query, params=()):
         for ix, columnName in enumerate(columnNames):
             d[columnName]= fila[ix]
         listaDeDiccionarios.append(d)
-    
+
     return listaDeDiccionarios
 
-def monedas_disponibles():
-    stock = consulta('SELECT to_currency, to_quantity FROM movements;')
-    mismonedas=['EUR']
-    for linea in stock:
-        moneda = linea['to_currency']
-        if moneda not in mismonedas:
-            mismonedas.append(moneda)
-    return mismonedas
+def micarteracripto(): #Devuelve diccionario con las criptomonedas y su saldo correspondiente disponible.
+    try:
+        carteraactual={}
+        transacciones = consulta('SELECT from_currency, from_quantity, to_currency, to_quantity FROM movements;')
+        for transaccion in transacciones:
+            if transaccion['to_currency'] not in carteraactual:
+                carteraactual[transaccion['to_currency']]=transaccion['to_quantity']
+                if transaccion['from_currency'] in carteraactual:
+                    carteraactual[transaccion['from_currency']]= (carteraactual[transaccion['from_currency']]) - transaccion['from_quantity']
+            else:
+                carteraactual[transaccion['to_currency']]=transaccion['to_quantity']+(carteraactual[transaccion['to_currency']])
+                if transaccion['from_currency'] in carteraactual:
+                    carteraactual[transaccion['from_currency']]= (carteraactual[transaccion['from_currency']]) - transaccion['from_quantity']
+        return carteraactual
+    except:
+        flash('Error al acceder a la base de datos')
+        return render_template('compra.html')
 
 @app.route('/')
 def listaMovimientos():
-    transacciones = consulta('SELECT id , date, time, from_currency, from_quantity, to_currency, to_quantity FROM movements;')
-    for transaccion in transacciones:
-        print(transaccion)
-        precio_u = (transaccion['from_quantity'])/(transaccion['to_quantity'])
-        transaccion['preciounitario'] = redondea_valor(precio_u)
-    return render_template('listamovimientos.html', transacciones=transacciones) 
+    try:
+        transacciones = consulta('SELECT id , date, time, from_currency, from_quantity, to_currency, to_quantity FROM movements;')
+        for transaccion in transacciones:
+            precio_u = (transaccion['from_quantity'])/(transaccion['to_quantity'])
+            transaccion['preciounitario'] = redondea_valor(precio_u)
+        return render_template('listamovimientos.html', transacciones=transacciones) 
+    except:
+        transacciones = []
+        flash("Error en el acceso a la base de datos. No pueden mostrarse los movimientos")
+        return render_template('listamovimientos.html', transacciones=transacciones) 
 
 @app.route('/compra', methods=["GET", "POST"])
 def nuevaCompra():
     form = MovementForm()
-    mismonedas = monedas_disponibles()
+    try:
+        micartera = micarteracripto()
+    except:
+        flash('Error al acceso de la base de datos')
+        return render_template('compra.html', form=form)
+    mismonedas = list(micartera.keys())
+    if 'EUR' not in mismonedas:
+        mismonedas.append('EUR')
     form.from_currency.choices=mismonedas
     if request.method == "POST":
         if 'calculadora' in request.form:
@@ -104,14 +125,7 @@ def nuevaCompra():
                 return render_template('compra.html', form=form)
         else:
             if form.validate():
-                print(request.form)
-                carteraactual={}
-                divisasdistintas = consulta('SELECT to_quantity, to_currency FROM movements WHERE to_currency <> "EUR"')
-                for cripto in divisasdistintas:
-                    if cripto['to_currency'] not in carteraactual:
-                        carteraactual[cripto['to_currency']]=cripto['to_quantity']
-                    else:
-                        carteraactual[cripto['to_currency']]=cripto['to_quantity']+(carteraactual[cripto['to_currency']])
+                carteraactual = micarteracripto()
                 if form.from_currency_hidden.data != 'EUR':
                     disponible=float((carteraactual[form.from_currency_hidden.data]))
                 if form.from_currency_hidden.data !='EUR' and float(form.q1_hidden.data) > disponible:
@@ -119,18 +133,22 @@ def nuevaCompra():
                     return render_template('compra.html', form=form)
                 today = date.today()
                 fecha = today.strftime("%d/%m/%Y")
-                hour = datetime.now().time()
-                consulta('INSERT INTO movements (date, time, from_currency, from_quantity, to_currency, to_quantity) VALUES (?, ?, ?, ?, ?, ?);', 
-                        (
-                        str(fecha),
-                        str(hour),
-                        form.from_currency_hidden.data,
-                        form.q1_hidden.data,
-                        form.to_currency_hidden.data,
-                        round(form.q2_hidden.data, sigfigs=4),
+                hora = datetime.now().time()
+                try:
+                    consulta('INSERT INTO movements (date, time, from_currency, from_quantity, to_currency, to_quantity) VALUES (?, ?, ?, ?, ?, ?);', 
+                            (
+                            str(fecha),
+                            str(hora),
+                            form.from_currency_hidden.data,
+                            form.q1_hidden.data,
+                            form.to_currency_hidden.data,
+                            round(form.q2_hidden.data, sigfigs=4),
+                            )
                         )
-                    ) 
-                return redirect(url_for('listaMovimientos')) #te devuelve a la página principal   
+                    return redirect(url_for('listaMovimientos')) #te devuelve a la página principal
+                except:
+                    flash('Error al guardar. La operación no se ha realizado')
+                    return render_template('compra.html', form=form)
             else:
                 flash('Completa todos los datos del formulario antes de comprar.')
                 return render_template("compra.html", form=form)
@@ -138,39 +156,46 @@ def nuevaCompra():
 
 @app.route('/balance')
 def balance():
-    euros_from = consulta('SELECT from_quantity FROM movements WHERE from_currency = "EUR"')
-    euros_to = consulta('SELECT to_quantity FROM movements WHERE to_currency = "EUR"')
+    try:
+        euros_from = consulta('SELECT from_quantity FROM movements WHERE from_currency = "EUR"')
+        euros_to = consulta('SELECT to_quantity FROM movements WHERE to_currency = "EUR"')
+    except:
+        flash('Imposible acceder a la base de datos.')
+        inversion=0
+        return render_template('balance.html', inversion=inversion)
     saldo_euros_invertidos=0
     total_euros_invertidos=0
-    carteraactual={}
     for euros in euros_from:
         total_euros_invertidos += (euros['from_quantity'])
         saldo_euros_invertidos = saldo_euros_invertidos - (euros['from_quantity'])
     for euros in euros_to:
         saldo_euros_invertidos = saldo_euros_invertidos + (euros['to_quantity'])
-    transacciones = consulta('SELECT from_currency, from_quantity, to_currency, to_quantity FROM movements;')
-    for transaccion in transacciones:
-        print(transaccion)
-        if transaccion['to_currency'] not in carteraactual:
-            carteraactual[transaccion['to_currency']]=transaccion['to_quantity']
-            if transaccion['from_currency'] in carteraactual:
-                carteraactual[transaccion['from_currency']]= (carteraactual[transaccion['from_currency']]) - transaccion['from_quantity']
-        else:
-            carteraactual[transaccion['to_currency']]=transaccion['to_quantity']+(carteraactual[transaccion['to_currency']])
-            if transaccion['from_currency'] in carteraactual:
-                carteraactual[transaccion['from_currency']]= (carteraactual[transaccion['from_currency']]) - transaccion['from_quantity']
-
+    carteraactual = micarteracripto()
+    if 'EUR' in carteraactual:
+        carteraactual.pop('EUR')
+    print(carteraactual)
     valoractual=0
     for clave, valor in carteraactual.items(): #TODO: OJO EXCEPCIONES API
-        if valor == 0:
+        if valor == 0 or valor < 0:
             precio = 0
         else:
             url = 'https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={}&symbol={}&convert={}&CMC_PRO_API_KEY={}'.format(valor, clave, 'EUR', API_KEY)
             respuesta = requests.get(url)
-            ey = respuesta.json()
-            precio = (ey['data']['quote']['EUR']['price'])
+            if respuesta.status_code ==200:
+                ey = respuesta.json()
+                precio = (ey['data']['quote']['EUR']['price'])
+            else:
+                flash('Error de API KEY. No podemos calcular tu balance')
+                total_euros_invertidos=0
+                valoractual=0
+                balance=0
+                return render_template('balance.html', inversion=total_euros_invertidos, valoractual=valoractual, balance=balance)
         valoractual += precio
-    misaldo=round(valoractual, decimals=2)
+    # misaldo=round(valoractual, decimals=2)
     misaldo= total_euros_invertidos + saldo_euros_invertidos + valoractual
-    balance = round((misaldo - total_euros_invertidos), decimals=3)
+    misaldo = redondea_valor(misaldo)
+    # balance = round((misaldo - total_euros_invertidos), decimals=3)
+    balance = redondea_valor(misaldo - total_euros_invertidos)
     return render_template('balance.html', inversion=total_euros_invertidos, valoractual=misaldo, balance=balance)
+
+

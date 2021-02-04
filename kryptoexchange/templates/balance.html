@@ -12,6 +12,15 @@
 <h2>Mi Balance</h2>
 
     <br>
+    {% with messages =  get_flashed_messages() %}
+        {% if messages %}
+            <div class=error>
+            {% for message in messages %}
+            <li class= error>{{ message }}</li>
+            {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
     {% if inversion > 0 %}
         <table style="margin: 0 auto;">
             <thead>
@@ -44,7 +53,13 @@
         </table>
     </div>
     <br>
+    {% with messages =  get_flashed_messages() %}
+        {% if messages %}:
+        <br>
+        {%else%}
         <p>¡Oh no! No has invertido ni un duro. 😢 ¡Haz tu primera compra!.</p>
+        {% endif %}
+    {% endwith %}
     {% endif %}
 
 {%endblock%}

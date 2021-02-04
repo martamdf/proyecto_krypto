@@ -4,3 +4,4 @@ venv/
 __pycache__/
 kryptoexchange/data/
 config.py
+createtable

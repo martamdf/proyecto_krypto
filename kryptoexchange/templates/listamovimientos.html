@@ -13,6 +13,15 @@
     <h2 class="h2">Mis Transacciones</h2>
     </div>
 <div>
+    {% with messages =  get_flashed_messages() %}
+        {% if messages %}
+            <div class=error>
+            {% for message in messages %}
+            <li class= error>{{ message }}</li>
+            {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
     {% if transacciones|length > 0 %}
         <table class="center">
             <thead>

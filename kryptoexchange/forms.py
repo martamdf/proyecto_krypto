@@ -5,16 +5,19 @@ from wtforms.validators import DataRequired, Length
 import sqlite3
 
 
-DBfile = app.config['DBFILE']
-conn = sqlite3.connect(DBfile)
-c = conn.cursor()
-c.execute('SELECT id FROM cryptos;')
-conn.commit()
-lista = c.fetchall()
-listilla= []
-for moneda in lista:
-    listilla.append(moneda[0])
-conn.close()
+try:
+    DBfile = app.config['DBFILE']
+    conn = sqlite3.connect(DBfile)
+    c = conn.cursor()
+    c.execute('SELECT id FROM cryptos;')
+    conn.commit()
+    lista = c.fetchall()
+    listilla= []
+    for moneda in lista:
+        listilla.append(moneda[0])
+    conn.close()
+except:
+    listilla=['EUR']
 
 
 class MovementForm(FlaskForm): #hereda de FlaskForm

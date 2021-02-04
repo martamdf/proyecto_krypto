@@ -19,11 +19,9 @@ Seleccione los datos de la nueva compra:
     <div>
         {% with messages =  get_flashed_messages() %}
             {% if messages %}
-                <div class=error>
                 {% for message in messages %}
                 <li class= error>{{ message }}</li>
                 {% endfor %}
-                </div>
             {% endif %}
         {% endwith %}
             </div>
