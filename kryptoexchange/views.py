@@ -52,17 +52,48 @@ def micarteracripto(): #Devuelve diccionario con las criptomonedas y su saldo co
         transacciones = consulta('SELECT from_currency, from_quantity, to_currency, to_quantity FROM movements;')
         for transaccion in transacciones:
             if transaccion['to_currency'] not in carteraactual:
-                carteraactual[transaccion['to_currency']]=transaccion['to_quantity']
-                if transaccion['from_currency'] in carteraactual:
-                    carteraactual[transaccion['from_currency']]= (carteraactual[transaccion['from_currency']]) - transaccion['from_quantity']
-            else:
-                carteraactual[transaccion['to_currency']]=transaccion['to_quantity']+(carteraactual[transaccion['to_currency']])
-                if transaccion['from_currency'] in carteraactual:
-                    carteraactual[transaccion['from_currency']]= (carteraactual[transaccion['from_currency']]) - transaccion['from_quantity']
+                carteraactual[transaccion['to_currency']] = transaccion['to_quantity']
+            else: 
+                carteraactual[transaccion['to_currency']] += transaccion['to_quantity']
+            if transaccion['from_currency'] not in carteraactual:
+                carteraactual[transaccion['from_currency']] = (0-transaccion['from_quantity'])
+            else: 
+                carteraactual[transaccion['from_currency']] -= transaccion['from_quantity']
         return carteraactual
     except:
         flash('Error al acceder a la base de datos')
         return render_template('compra.html')
+
+def controldeerrores_calculadora(form):
+    if form.q1.data == None or isinstance (form.q1.data, str) or form.q1.data <= 0 :
+        error = ('Formato numérico introducido no válido')
+        return error
+    if form.from_currency.data == form.to_currency.data:
+        error = ('Error: Las monedas no pueden ser iguales.')
+        return error
+    if form.from_currency.data == 'EUR' and form.to_currency.data != 'BTC':
+        error = ('Solo puedes utilizar BTCs para comprar esta moneda')
+        return error
+    if form.from_currency.data != 'BTC' and form.to_currency.data == 'EUR':
+        error = ('Solo puedes convertir a EUR desde BTC')
+        return error
+    if form.q1.data > 1000000000:
+        error = ('El importe máximo de conversión es de 1000000000')
+        return error
+    else:
+        pass
+
+def consulta_api(form):
+    url = 'https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={}&symbol={}&convert={}&CMC_PRO_API_KEY={}'.format(form.q1.data, form.from_currency.data, form.to_currency.data, API_KEY)
+    respuesta = requests.get(url)
+    if respuesta.status_code ==200:
+        resp_json = respuesta.json()
+        return resp_json
+    else:
+        error = ('Se ha producido un error. APIKEY incorrecta')
+        print(error)
+        return error
+
 
 @app.route('/')
 def listaMovimientos():
@@ -80,48 +111,39 @@ def listaMovimientos():
 @app.route('/compra', methods=["GET", "POST"])
 def nuevaCompra():
     form = MovementForm()
-    try:
+    try: #Acceso a la base de datos para crear la lista de monedas disponibles.
         micartera = micarteracripto()
+        print(micartera)
     except:
-        flash('Error al acceso de la base de datos')
+        flash('Error al acceso de la base de datos. Inténtelo de nuevo más tarde')
         return render_template('compra.html', form=form)
     mismonedas = list(micartera.keys())
-    if 'EUR' not in mismonedas:
+    if 'EUR' not in mismonedas: 
         mismonedas.append('EUR')
     form.from_currency.choices=mismonedas
+
     if request.method == "POST":
         if 'calculadora' in request.form:
-            if form.q1.data == None or isinstance (form.q1.data, str) or form.q1.data <= 0 :
-                flash('Formato numérico introducido no válido')
+            error = controldeerrores_calculadora(form)
+            if error != None:
+                flash(error)
                 return render_template('compra.html', form=form)
-            if form.from_currency.data == form.to_currency.data:
-                flash('Error: Las monedas no pueden ser iguales.')
-                return render_template('compra.html', form=form)
-            if form.from_currency.data == 'EUR' and form.to_currency.data != 'BTC':
-                flash('Solo puedes utilizar BTCs para comprar esta moneda')
-                return render_template('compra.html', form=form)
-            if form.from_currency.data != 'BTC' and form.to_currency.data == 'EUR':
-                flash('Solo puedes convertir a EUR desde BTC')
-                return render_template('compra.html', form=form)
-            if form.q1.data > 1000000000:
-                flash('El importe máximo de conversión es de 1000000000')
-                return render_template('compra.html', form=form)
-            url = 'https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={}&symbol={}&convert={}&CMC_PRO_API_KEY={}'.format(form.q1.data, form.from_currency.data, form.to_currency.data, API_KEY)
-            respuesta = requests.get(url)
-            if respuesta.status_code ==200:
-                ey = respuesta.json()
-                precio = (ey['data']['quote'][form.to_currency.data]['price'])
+            resp_json = consulta_api(form)
+            if not isinstance(resp_json, str):
+                precio = (resp_json['data']['quote'][form.to_currency.data]['price'])
                 cantidadconvertida = redondea_valor(precio)
                 form.q2.data = cantidadconvertida
-                form.q2_hidden.data = cantidadconvertida
-                form.q1_hidden.data = form.q1.data
+                preciounitario = redondea_valor(form.q1.data/precio)
+                # generamos campos ocultos de la consulta
                 form.to_currency_hidden.data = form.to_currency.data
                 form.from_currency_hidden.data = form.from_currency.data
-                preciounitario = redondea_valor(form.q1.data/precio)
                 form.preciounitario_hidden.data = preciounitario
+                form.q2_hidden.data = cantidadconvertida
+                form.q1_hidden.data = form.q1.data
                 return render_template("compra.html", form=form, cantidadconvertida=cantidadconvertida, preciounitario=preciounitario)
             else:
-                flash('Se ha producido un error. APIKEY incorrecta')
+                error=('Se ha producido un error. APIKEY incorrecta')
+                flash(error)
                 return render_template('compra.html', form=form)
         else:
             if form.validate():
@@ -194,8 +216,8 @@ def balance():
     # misaldo=round(valoractual, decimals=2)
     misaldo= total_euros_invertidos + saldo_euros_invertidos + valoractual
     misaldo = redondea_valor(misaldo)
-    # balance = round((misaldo - total_euros_invertidos), decimals=3)
-    balance = redondea_valor(misaldo - total_euros_invertidos)
+    balance = round((misaldo - total_euros_invertidos), decimals=3)
+    # balance = redondea_valor(misaldo - total_euros_invertidos)
     return render_template('balance.html', inversion=total_euros_invertidos, valoractual=misaldo, balance=balance)
 
 

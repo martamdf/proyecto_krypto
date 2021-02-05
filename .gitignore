@@ -5,3 +5,4 @@ __pycache__/
 kryptoexchange/data/
 config.py
 createtable
+micartera.py
