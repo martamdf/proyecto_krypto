@@ -33,7 +33,7 @@ En el terminal, estando en nuestra carpeta de proyecto ejecutaremos la siguiente
 El segundo 'venv', se corresponde con el nombre que hemos dado a nuestro entorno virtual.
 
 
-### 5. Activación del entorno virtual.
+### 5. Activación del Entorno virtual.
 
 Ejecutar la siguiente instrucción en el terminal:
 
