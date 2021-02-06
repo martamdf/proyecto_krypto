@@ -20,7 +20,7 @@ mySql_insert_query = """INSERT INTO cryptos (id, nombre_moneda) VALUES (?, ?) ""
 
 def sql_connection():
     try:
-        con = sqlite3.connect('kryptoexchange/data/mydatabase.db')
+        con = sqlite3.connect('kryptoexchange/data/exchanges.db')
         return con
     except Error:
         print(Error)

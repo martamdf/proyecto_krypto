@@ -134,11 +134,15 @@ h3 {
 
 header {
     height: 200px;
-    color:#0f4577;
-    padding-top: 9vw; 
-    padding-bottom: 1vw;
-    padding-right: 1vw;
+    color: #0f4577;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-right: 0;
     text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-right: 30px;
 }
 
 main {
