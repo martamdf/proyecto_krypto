@@ -1,3 +1,5 @@
+
+
 CREATE TABLE "movements" (
 	"id"	INTEGER,
 	"date"	TEXT,
@@ -10,3 +12,25 @@ CREATE TABLE "movements" (
 	FOREIGN KEY("from_currency") REFERENCES "cryptos"("id"),
 	FOREIGN KEY("to_currency") REFERENCES "cryptos"("id")
 )
+
+INSERT INTO "main"."cryptos"(
+	"id","nombre_moneda") 
+	VALUES 
+		(
+			"EUR",
+			"Euro"
+		), 
+		(
+			"ETH",
+			"Ethereum"
+		), 
+		("LTC","Litecoin"), 
+		("BNB","Binance Coin"), 
+		("EOS","EOS"), 
+		("TRX","TRON"),
+		("BTC","Bitcoin"), 
+		("XRP","Ripple"), 
+		("BCH","Bitcoin Cash"), 
+		("USDT","Tether"), 
+		("BSV","Bitcoin SV"), 
+		("ADA","Cardano");
