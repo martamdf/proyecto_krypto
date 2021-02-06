@@ -162,6 +162,9 @@ def nuevaCompra():
         else:
             if form.validate():
                 carteraactual = micarteracripto()
+                if form.q2.data == None:
+                    flash('Calcule la conversión antes de continuar.')
+                    return render_template('compra.html', form=form)
                 if form.from_currency_hidden.data != 'EUR':
                     disponible=float((carteraactual[form.from_currency_hidden.data]))
                 if form.from_currency_hidden.data !='EUR' and float(form.q1_hidden.data) > disponible:
