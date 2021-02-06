@@ -9,9 +9,9 @@ A tener en cuenta que debemos de tener instalado SqLite3.
 
 ### 1. Clonación del proyecto.
 
-Entrar en el terminal en la carpeta donde queramos instalar el proyecto y ejecutar la siguiente sentencia:
+Entrar en el terminal en la ruta donde queramos instalar el proyecto y ejecutar la siguiente sentencia (en este caso nos creará una carpeta de nombre krypto):
 
-` git clone https://github.com/martamdf/proyecto_krypto.git `
+` git clone https://github.com/martamdf/proyecto_krypto.git krypto`
 
 ### 2. Creación del fichero de la base de datos.
 
@@ -43,7 +43,7 @@ Ejecutar la siguiente instrucción en el terminal:
 
 Instalar las dependencias ejecutando el siguiente mandato: 
 
-` pip install requirements.txt `
+` pip install -r requirements.txt `
 
 ### 7. Solicitud de API KEY a CoinmarketCap.
 
