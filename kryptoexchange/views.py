@@ -64,6 +64,22 @@ def micarteracripto(): #Devuelve diccionario con las criptomonedas y su saldo co
         flash('Error al acceder a la base de datos')
         return render_template('compra.html')
 
+def listamonedas():
+    try:
+        DBfile = app.config['DBFILE']
+        conn = sqlite3.connect(DBfile)
+        c = conn.cursor()
+        c.execute('SELECT id FROM cryptos;')
+        conn.commit()
+        lista = c.fetchall()
+        market_coins= []
+        for moneda in lista:
+            market_coins.append(moneda[0])
+        conn.close()
+        return market_coins
+    except:
+        market_coins=['EUR']
+
 def controldeerrores_calculadora(form):
     if form.q1.data == None or isinstance (form.q1.data, str) or form.q1.data <= 0 :
         error = ('Formato numérico introducido no válido')
@@ -91,9 +107,7 @@ def consulta_api(form):
         return resp_json
     else:
         error = ('Se ha producido un error. APIKEY incorrecta')
-        print(error)
         return error
-
 
 @app.route('/')
 def listaMovimientos():
@@ -113,7 +127,7 @@ def nuevaCompra():
     form = MovementForm()
     try: #Acceso a la base de datos para crear la lista de monedas disponibles.
         micartera = micarteracripto()
-        print(micartera)
+        market_coins = listamonedas()
     except:
         flash('Error al acceso de la base de datos. Inténtelo de nuevo más tarde')
         return render_template('compra.html', form=form)
@@ -121,11 +135,12 @@ def nuevaCompra():
     if 'EUR' not in mismonedas: 
         mismonedas.append('EUR')
     form.from_currency.choices=mismonedas
+    form.to_currency.choices= market_coins
 
     if request.method == "POST":
         if 'calculadora' in request.form:
             error = controldeerrores_calculadora(form)
-            if error != None:
+            if error:
                 flash(error)
                 return render_template('compra.html', form=form)
             resp_json = consulta_api(form)
@@ -137,7 +152,6 @@ def nuevaCompra():
                 # generamos campos ocultos de la consulta
                 form.to_currency_hidden.data = form.to_currency.data
                 form.from_currency_hidden.data = form.from_currency.data
-                form.preciounitario_hidden.data = preciounitario
                 form.q2_hidden.data = cantidadconvertida
                 form.q1_hidden.data = form.q1.data
                 return render_template("compra.html", form=form, cantidadconvertida=cantidadconvertida, preciounitario=preciounitario)
@@ -195,29 +209,24 @@ def balance():
     carteraactual = micarteracripto()
     if 'EUR' in carteraactual:
         carteraactual.pop('EUR')
-    print(carteraactual)
     valoractual=0
-    for clave, valor in carteraactual.items(): #TODO: OJO EXCEPCIONES API
-        if valor == 0 or valor < 0:
+    for clave, valor in carteraactual.items(): 
+        if valor == 0:
             precio = 0
         else:
             url = 'https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={}&symbol={}&convert={}&CMC_PRO_API_KEY={}'.format(valor, clave, 'EUR', API_KEY)
             respuesta = requests.get(url)
             if respuesta.status_code ==200:
-                ey = respuesta.json()
-                precio = (ey['data']['quote']['EUR']['price'])
+                dict_precios = respuesta.json()
+                precio = (dict_precios['data']['quote']['EUR']['price'])
             else:
                 flash('Error de API KEY. No podemos calcular tu balance')
-                total_euros_invertidos=0
-                valoractual=0
-                balance=0
-                return render_template('balance.html', inversion=total_euros_invertidos, valoractual=valoractual, balance=balance)
+                inversion = 0
+                return render_template('balance.html', inversion=inversion)
         valoractual += precio
-    # misaldo=round(valoractual, decimals=2)
     misaldo= total_euros_invertidos + saldo_euros_invertidos + valoractual
     misaldo = redondea_valor(misaldo)
     balance = round((misaldo - total_euros_invertidos), decimals=3)
-    # balance = redondea_valor(misaldo - total_euros_invertidos)
     return render_template('balance.html', inversion=total_euros_invertidos, valoractual=misaldo, balance=balance)
 
 
