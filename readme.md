@@ -57,5 +57,5 @@ Realizar una copia del fichero config_template.py y renombrarlo como config.py.
 Establecer una SECRET KEY, introducir la ruta a la base de datos (kryptoexchange/data/exchanges.db), e introducir la API KEY que nos ha proporcionado CoinMarketCap.
 
 
-Nuestra aplicación estaría lista para funcionar ejecutando flask run.
+Nuestra aplicación estaría lista para funcionar ejecutando el comando "flask run".
 
